@@ -1,5 +1,7 @@
 openai
 langchain
-langchain-openai
 langchain-google-genai
 python-dotenv
+pydantic
+fastapi
+uvicorn
