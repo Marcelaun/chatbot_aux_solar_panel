@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infográfico: Guia Visual para Detecção de Falhas em Painéis Solares</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F0F4F8; 
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .thermal-sim {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+            width: 150px;
+            height: 100px;
+            padding: 5px;
+            background-color: #003B73;
+            border-radius: 4px;
+        }
+        .thermal-cell {
+            background-color: #0074B7;
+            border-radius: 2px;
+        }
+        .hotspot {
+            background-color: #FF6384; 
+            animation: pulse 2s infinite;
+        }
+        .pid-pattern .thermal-cell:nth-child(-n+6) {
+             background-color: #ff9f40;
+             opacity: 0.7;
+        }
+        .crack-pattern .thermal-cell:nth-child(15) {
+             background-color: #FF6384;
+        }
+         .delamination-pattern .thermal-cell:nth-child(1),
+         .delamination-pattern .thermal-cell:nth-child(2),
+         .delamination-pattern .thermal-cell:nth-child(7),
+         .delamination-pattern .thermal-cell:nth-child(8) {
+            background-color: #ffcd56;
+            opacity: 0.8;
+         }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.05);
+            }
+        }
+        .flowchart-step {
+            background-color: white;
+            border: 2px solid #BFD7ED;
+            color: #003B73;
+        }
+        .flowchart-arrow {
+            color: #0074B7;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #0074B7;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-[#003B73] text-white p-8 text-center shadow-lg">
+        <h1 class="text-4xl md:text-5xl font-bold mb-2">Guia Visual para Detecção de Falhas em Painéis Solares</h1>
+        <p class="text-lg text-[#BFD7ED] max-w-3xl mx-auto">Um infográfico interativo para entender, identificar e diagnosticar problemas em sistemas fotovoltaicos usando termografia.</p>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <section id="panel-types" class="mb-16">
+            <h2 class="text-3xl font-bold text-[#003B73] mb-2 text-center">O Coração da Energia Solar: Tipos de Painéis</h2>
+            <p class="text-center max-w-2xl mx-auto mb-8 text-gray-600">A tecnologia do painel solar impacta diretamente sua eficiência, custo e assinatura térmica. Conhecer as diferenças é o primeiro passo para um diagnóstico preciso.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                    <h3 class="text-2xl font-bold text-[#003B73] mb-2">Monocristalino</h3>
+                    <p class="text-5xl mb-2">💎</p>
+                    <p class="text-gray-600 mb-4">Feito de um único cristal de silício puro, oferece a maior eficiência e uma aparência preta uniforme.</p>
+                    <ul class="text-left space-y-2">
+                        <li class="flex items-center"><span class="text-[#0074B7] mr-2">✓</span><strong>Alta Eficiência:</strong> Geralmente >20%</li>
+                        <li class="flex items-center"><span class="text-[#0074B7] mr-2">✓</span><strong>Desempenho:</strong> Superior em baixa luz</li>
+                        <li class="flex items-center"><span class="text-red-500 mr-2">✗</span><strong>Custo:</strong> Mais elevado</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                    <h3 class="text-2xl font-bold text-[#003B73] mb-2">Policristalino</h3>
+                    <p class="text-5xl mb-2">🧩</p>
+                    <p class="text-gray-600 mb-4">Produzido a partir de múltiplos fragmentos de silício, é mais econômico, com uma aparência azulada e cristalina.</p>
+                     <ul class="text-left space-y-2">
+                        <li class="flex items-center"><span class="text-[#0074B7] mr-2">✓</span><strong>Custo:</strong> Mais acessível</li>
+                        <li class="flex items-center"><span class="text-red-500 mr-2">✗</span><strong>Eficiência:</strong> Moderada (15-17%)</li>
+                        <li class="flex items-center"><span class="text-red-500 mr-2">✗</span><strong>Espaço:</strong> Requer mais área</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                    <h3 class="text-2xl font-bold text-[#003B73] mb-2">Filme Fino</h3>
+                    <p class="text-5xl mb-2">📜</p>
+                    <p class="text-gray-600 mb-4">Material semicondutor depositado em substrato, resultando em painéis leves e flexíveis.</p>
+                     <ul class="text-left space-y-2">
+                        <li class="flex items-center"><span class="text-[#0074B7] mr-2">✓</span><strong>Flexibilidade:</strong> Leve e versátil</li>
+                        <li class="flex items-center"><span class="text-red-500 mr-2">✗</span><strong>Eficiência:</strong> Mais baixa (~11%)</li>
+                        <li class="flex items-center"><span class="text-red-500 mr-2">✗</span><strong>Durabilidade:</strong> Potencialmente menor</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md mt-8">
+                <h3 class="text-2xl font-bold text-[#003B73] mb-4 text-center">Comparativo de Eficiência Típica</h3>
+                <div class="chart-container">
+                    <canvas id="efficiencyChart"></canvas>
+                </div>
+                <p class="text-sm text-gray-500 mt-4 text-center">Painéis monocristalinos lideram em eficiência, convertendo mais luz solar em eletricidade por metro quadrado. Essa maior eficiência também significa que eles tendem a operar em temperaturas ligeiramente mais baixas que os policristalinos sob a mesma irradiação, um fator chave para a análise térmica.</p>
+            </div>
+        </section>
+
+        <section id="performance-factors" class="mb-16">
+            <h2 class="text-3xl font-bold text-[#003B73] mb-2 text-center">O Impacto da Temperatura no Desempenho</h2>
+            <p class="text-center max-w-2xl mx-auto mb-8 text-gray-600">A temperatura é um dos fatores mais críticos que afetam a produção de energia de um painel. Entender sua influência é vital para diferenciar a operação normal de uma falha real.</p>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                 <h3 class="text-2xl font-bold text-[#003B73] mb-4 text-center">Potência Máxima (Pmax) vs. Temperatura da Célula</h3>
+                <div class="chart-container">
+                    <canvas id="temperatureImpactChart"></canvas>
+                </div>
+                <p class="text-sm text-gray-500 mt-4 text-center">À medida que a temperatura de um painel solar aumenta acima dos 25°C (padrão de teste), sua eficiência e potência máxima diminuem. O "Coeficiente de Temperatura de Pmax" (geralmente ~ -0.3% a -0.5% por °C) quantifica essa perda. Um sistema de IA deve usar este coeficiente para normalizar os dados e evitar falsos alarmes em dias quentes.</p>
+            </div>
+        </section>
+        
+        <section id="common-failures" class="mb-16">
+            <h2 class="text-3xl font-bold text-[#003B73] mb-2 text-center">Catálogo de Falhas Comuns e Suas Assinaturas Térmicas</h2>
+            <p class="text-center max-w-2xl mx-auto mb-8 text-gray-600">Cada falha deixa uma "impressão digital" térmica única. Aprender a reconhecer esses padrões é a chave para o diagnóstico rápido e preciso com câmeras termográficas.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+                    <h3 class="text-xl font-bold text-[#003B73] mb-2">Pontos Quentes (Hot Spots)</h3>
+                    <div class="thermal-sim hotspot mb-4">
+                        <script>document.write('<div class="thermal-cell"></div>'.repeat(36))</script>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 text-center">Células superaquecidas devido a sombreamento, microfissuras ou defeitos. São o sinal mais comum de problema.</p>
+                    <p class="font-semibold text-[#003B73]">Assinatura Térmica: Padrão pontual, bem definido, com alta temperatura.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+                    <h3 class="text-xl font-bold text-[#003B73] mb-2">Degradação Induzida por Potencial (PID)</h3>
+                    <div class="thermal-sim pid-pattern mb-4">
+                       <script>document.write('<div class="thermal-cell"></div>'.repeat(36))</script>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 text-center">Perda de potência devido a correntes de fuga, comum em painéis com alta tensão, umidade e temperatura.</p>
+                    <p class="font-semibold text-[#003B73]">Assinatura Térmica: Aquecimento de strings inteiras, geralmente nas extremidades do arranjo.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+                    <h3 class="text-xl font-bold text-[#003B73] mb-2">Microfissuras</h3>
+                     <div class="thermal-sim crack-pattern mb-4">
+                       <script>document.write('<div class="thermal-cell"></div>'.repeat(36))</script>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 text-center">Fraturas minúsculas na célula, muitas vezes invisíveis a olho nu, que aumentam a resistência e geram calor.</p>
+                    <p class="font-semibold text-[#003B73]">Assinatura Térmica: Frequentemente se manifestam como pontos quentes ou padrões lineares.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+                    <h3 class="text-xl font-bold text-[#003B73] mb-2">Falha de Diodo de Bypass</h3>
+                    <div class="relative mb-4">
+                        <div class="thermal-sim">
+                            <script>
+                                for(let i = 0; i < 36; i++) {
+                                    if (i % 6 < 2) document.write('<div class="thermal-cell" style="background-color:#FF9F40;"></div>');
+                                    else document.write('<div class="thermal-cell"></div>');
+                                }
+                            </script>
+                        </div>
+                         <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#FF6384] text-white text-xs font-bold px-2 py-1 rounded">CAIXA DE JUNÇÃO QUENTE</div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 text-center mt-2">Um diodo defeituoso pode causar o aquecimento de uma seção inteira do painel ou da própria caixa de junção.</p>
+                    <p class="font-semibold text-[#003B73]">Assinatura Térmica: Uma string inteira (1/3 do painel) aquecida ou um ponto quente na caixa de junção.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+                    <h3 class="text-xl font-bold text-[#003B73] mb-2">Delaminação e Corrosão</h3>
+                    <div class="thermal-sim delamination-pattern mb-4">
+                       <script>document.write('<div class="thermal-cell"></div>'.repeat(36))</script>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 text-center">Separação das camadas protetoras, permitindo a entrada de umidade que corrói os contatos e gera calor.</p>
+                    <p class="font-semibold text-[#003B73]">Assinatura Térmica: Padrões irregulares ou lineares de aquecimento, muitas vezes começando nas bordas.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+                    <h3 class="text-xl font-bold text-[#003B73] mb-2">Conexões Soltas</h3>
+                    <div class="relative flex justify-center items-center h-[100px] w-[150px] bg-[#003B73] rounded mb-4">
+                       <div class="w-12 h-6 bg-[#0074B7] rounded-l"></div>
+                       <div class="w-3 h-3 rounded-full bg-[#FF6384] z-10 pulse"></div>
+                       <div class="w-12 h-6 bg-[#0074B7] rounded-r"></div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 text-center">Conectores ou fiação mal fixados aumentam a resistência, causando superaquecimento no ponto de falha.</p>
+                    <p class="font-semibold text-[#003B73]">Assinatura Térmica: Ponto quente intenso e localizado em cabos ou caixas de junção.</p>
+                </div>
+            </div>
+             <div class="bg-white p-6 rounded-lg shadow-md mt-8">
+                <h3 class="text-2xl font-bold text-[#003B73] mb-4 text-center">Impacto Relativo das Falhas no Desempenho</h3>
+                 <div class="chart-container">
+                    <canvas id="failureImpactChart"></canvas>
+                </div>
+                 <p class="text-sm text-gray-500 mt-4 text-center">Este gráfico compara a severidade potencial de diferentes falhas. PID e falhas de diodo podem levar a perdas de potência imediatas e significativas, enquanto microfissuras representam um risco de degradação a longo prazo.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md mt-8">
+                <h3 class="text-2xl font-bold text-[#003B73] mb-4 text-center">✨ Diagnóstico Inteligente de Anomalias Térmicas ✨</h3>
+                <p class="text-center max-w-2xl mx-auto mb-4 text-gray-600">Descreva a anomalia térmica que você observou em um painel solar (ex: "um ponto muito quente no centro de uma célula", "uma linha quente na borda do painel", "um terço do painel está aquecido uniformemente"). Nosso sistema de IA irá sugerir possíveis falhas.</p>
+                <textarea id="anomalyDescription" class="w-full p-3 border border-gray-300 rounded-md mb-4 focus:ring-2 focus:ring-[#0074B7] focus:border-transparent" rows="4" placeholder="Descreva a anomalia térmica aqui..."></textarea>
+                <button id="diagnoseButton" class="w-full bg-[#0074B7] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#003B73] transition-colors flex items-center justify-center">
+                    <span id="buttonText">Diagnosticar Anomalia ✨</span>
+                    <div id="loadingSpinner" class="spinner ml-2 hidden"></div>
+                </button>
+                <div id="diagnosisResult" class="mt-4 p-4 bg-[#BFD7ED] rounded-lg text-[#003B73] font-semibold hidden"></div>
+            </div>
+        </section>
+
+        <section id="inspection-process" class="mb-16">
+            <h2 class="text-3xl font-bold text-[#003B73] mb-2 text-center">O Processo de Diagnóstico: Da Imagem à Ação</h2>
+            <p class="text-center max-w-2xl mx-auto mb-8 text-gray-600">A termografia é o ponto de partida. Um diagnóstico completo requer uma análise metódica que combina dados térmicos, elétricos e visuais.</p>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-2xl font-bold text-[#003B73] mb-6 text-center">Fluxo de Trabalho de Diagnóstico</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flowchart-step p-4 rounded-lg shadow text-center w-48">
+                        <p class="text-2xl mb-2">🌡️</p>
+                        <p class="font-bold">1. Captura Térmica</p>
+                        <p class="text-xs">Inspeção com drone ou câmera manual.</p>
+                    </div>
+                    <div class="font-bold text-2xl flowchart-arrow transform md:-rotate-0 rotate-90">&rarr;</div>
+                    <div class="flowchart-step p-4 rounded-lg shadow text-center w-48">
+                         <p class="text-2xl mb-2">🤔</p>
+                        <p class="font-bold">2. Análise de Padrão</p>
+                        <p class="text-xs">Identificar assinatura térmica (ponto, linha, área).</p>
+                    </div>
+                     <div class="font-bold text-2xl flowchart-arrow transform md:-rotate-0 rotate-90">&rarr;</div>
+                    <div class="flowchart-step p-4 rounded-lg shadow text-center w-48">
+                         <p class="text-2xl mb-2">⚡</p>
+                        <p class="font-bold">3. Teste Elétrico</p>
+                        <p class="text-xs">Correlacionar com curva I-V para validar a perda.</p>
+                    </div>
+                     <div class="font-bold text-2xl flowchart-arrow transform md:-rotate-0 rotate-90">&rarr;</div>
+                    <div class="flowchart-step p-4 rounded-lg shadow text-center w-48">
+                        <p class="text-2xl mb-2">✅</p>
+                        <p class="font-bold">4. Diagnóstico Final</p>
+                        <p class="text-xs">Determinar causa raiz e recomendar ação corretiva.</p>
+                    </div>
+                </div>
+            </div>
+             <div class="bg-white p-6 rounded-lg shadow-md mt-8">
+                 <h3 class="text-2xl font-bold text-[#003B73] mb-4 text-center">Condições Ideais para Inspeção Termográfica</h3>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div>
+                        <p class="text-4xl">☀️</p>
+                        <p class="font-bold mt-2">Irradiância Alta</p>
+                        <p class="text-sm text-gray-600">> 700 W/m² (céu limpo)</p>
+                    </div>
+                    <div>
+                        <p class="text-4xl">🌬️</p>
+                        <p class="font-bold mt-2">Vento Baixo</p>
+                        <p class="text-sm text-gray-600">Vento forte mascara anomalias.</p>
+                    </div>
+                    <div>
+                        <p class="text-4xl">🕒</p>
+                        <p class="font-bold mt-2">Horário Ideal</p>
+                        <p class="text-sm text-gray-600">Entre 10h e 15h para estabilidade.</p>
+                    </div>
+                 </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#003B73] text-white p-4 text-center mt-8">
+        <p>&copy; 2025 Infográfico de Diagnóstico Solar. Criado para auxiliar sistemas de IA na manutenção preditiva.</p>
+    </footer>
+
+    <script>
+        const tooltipCallback = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                                return label.join(' ');
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        };
+
+        function wrapLabel(str, maxWidth) {
+            if (str.length <= maxWidth) return str;
+            const words = str.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length > maxWidth && currentLine.length > 0) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            }
+            lines.push(currentLine.trim());
+            return lines;
+        }
+
+        const oceanicVibrant = {
+            blueDark: '#003B73',
+            blueMid: '#0074B7',
+            blueLight: '#BFD7ED',
+            orange: '#ff9f40',
+            yellow: '#ffcd56',
+            red: '#FF6384',
+            white: '#FFFFFF'
+        };
+
+        const efficiencyData = {
+            labels: ['Filme Fino', 'Policristalino', 'Monocristalino'],
+            datasets: [{
+                label: 'Eficiência Típica (%)',
+                data: [11, 17, 22.7],
+                backgroundColor: [oceanicVibrant.yellow, oceanicVibrant.blueMid, oceanicVibrant.blueDark],
+                borderColor: oceanicVibrant.white,
+                borderWidth: 2
+            }]
+        };
+
+        new Chart(document.getElementById('efficiencyChart'), {
+            type: 'bar',
+            data: efficiencyData,
+            options: {
+                ...tooltipCallback,
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    ...tooltipCallback.plugins,
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Eficiência Máxima (%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        const temperatureData = {
+            labels: ['15°C', '25°C (STC)', '35°C', '45°C', '55°C', '65°C'],
+            datasets: [{
+                label: 'Perda de Potência Relativa',
+                data: [102.5, 100, 96, 92, 88, 84],
+                fill: true,
+                backgroundColor: 'rgba(0, 116, 183, 0.2)',
+                borderColor: oceanicVibrant.blueMid,
+                tension: 0.1,
+                pointBackgroundColor: oceanicVibrant.blueDark
+            }]
+        };
+
+        new Chart(document.getElementById('temperatureImpactChart'), {
+            type: 'line',
+            data: temperatureData,
+            options: {
+                ...tooltipCallback,
+                responsive: true,
+                maintainAspectRatio: false,
+                 plugins: {
+                    ...tooltipCallback.plugins,
+                    legend: {
+                       display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Potência (%)'
+                        }
+                    },
+                     x: {
+                        title: {
+                            display: true,
+                            text: 'Temperatura da Célula'
+                        }
+                    }
+                }
+            }
+        });
+
+        const failureLabels = [
+            'Hot Spots',
+            'Microfissuras',
+            ['Degradação', 'do Backsheet'],
+            'Delaminação',
+            ['Falha de Diodo', 'de Bypass'],
+            ['Degradação', 'Induzida por', 'Potencial (PID)'],
+        ];
+
+        new Chart(document.getElementById('failureImpactChart'), {
+            type: 'radar',
+            data: {
+                labels: failureLabels,
+                datasets: [{
+                    label: 'Impacto Potencial',
+                    data: [7, 6, 5, 8, 9, 10], // Scale 1-10
+                    fill: true,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: oceanicVibrant.red,
+                    pointBackgroundColor: oceanicVibrant.red,
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: oceanicVibrant.red
+                }]
+            },
+            options: {
+                ...tooltipCallback,
+                 responsive: true,
+                maintainAspectRatio: false,
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        pointLabels: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                     ...tooltipCallback.plugins,
+                     legend: {
+                       display: false
+                    }
+                }
+            }
+        });
+
+        document.getElementById('diagnoseButton').addEventListener('click', async () => {
+            const anomalyDescription = document.getElementById('anomalyDescription').value;
+            const diagnosisResult = document.getElementById('diagnosisResult');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const buttonText = document.getElementById('buttonText');
+
+            if (!anomalyDescription.trim()) {
+                diagnosisResult.classList.remove('hidden');
+                diagnosisResult.textContent = 'Por favor, descreva a anomalia térmica para obter um diagnóstico.';
+                return;
+            }
+
+            diagnosisResult.classList.add('hidden');
+            loadingSpinner.classList.remove('hidden');
+            buttonText.textContent = 'Diagnosticando...';
+            document.getElementById('diagnoseButton').disabled = true;
+
+            try {
+                let chatHistory = [];
+                const prompt = `Você é um especialista em diagnóstico de falhas em painéis solares com base em assinaturas térmicas. Dadas as seguintes descrições de falhas comuns e suas assinaturas térmicas:
+
+- Pontos Quentes (Hot Spots): Células superaquecidas devido a sombreamento, microfissuras ou defeitos. Assinatura Térmica: Padrão pontual, bem definido, com alta temperatura.
+- Degradação Induzida por Potencial (PID): Perda de potência devido a correntes de fuga. Assinatura Térmica: Aquecimento de strings inteiras, geralmente nas extremidades do arranjo.
+- Microfissuras: Fraturas minúsculas na célula que aumentam a resistência e geram calor. Assinatura Térmica: Frequentemente se manifestam como pontos quentes ou padrões lineares.
+- Falha de Diodo de Bypass: Um diodo defeituoso pode causar o aquecimento de uma seção inteira do painel ou da própria caixa de junção. Assinatura Térmica: Uma string inteira (1/3 do painel) aquecida ou um ponto quente na caixa de junção.
+- Delaminação e Corrosão: Separação das camadas protetoras, permitindo a entrada de umidade que corrói os contatos e gera calor. Assinatura Térmica: Padrões irregulares ou lineares de aquecimento, muitas vezes começando nas bordas.
+- Conexões Soltas: Conectores ou fiação mal fixados aumentam a resistência, causando superaquecimento no ponto de falha. Assinatura Térmica: Ponto quente intenso e localizado em cabos ou caixas de junção.
+
+Por favor, analise a seguinte descrição de anomalia térmica e sugira a(s) falha(s) mais provável(is), justificando brevemente sua resposta com base nas assinaturas térmicas fornecidas. Seja conciso e direto ao ponto.
+
+Descrição da Anomalia: "${anomalyDescription}"`;
+
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    diagnosisResult.textContent = text;
+                } else {
+                    diagnosisResult.textContent = 'Não foi possível obter um diagnóstico. Tente novamente.';
+                }
+            } catch (error) {
+                console.error('Erro ao chamar a API Gemini:', error);
+                diagnosisResult.textContent = 'Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente mais tarde.';
+            } finally {
+                loadingSpinner.classList.add('hidden');
+                buttonText.textContent = 'Diagnosticar Anomalia ✨';
+                document.getElementById('diagnoseButton').disabled = false;
+                diagnosisResult.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
